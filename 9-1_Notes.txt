@@ -1,0 +1,355 @@
+Intro to CyberSec
+====================================================================================================================================
+
+////////////////////////////////////////////// CYBER DEFENSE INTRODUCTION FINISHED \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	
+====================================================================================================================================
+
+Seecurity Operations and Monitoring
+	Core Windows Processes
+		Task 1 - Intro
+		Task 2 - Task Manager
+			• This section goes over Task Manager, anyone growing up using Windows is probably fairly familiar with it
+				○ Process Hacker
+				○ Proc Explorer (sysinterals)
+		Task 3 - System
+		Task 4 - System > smss.exe
+			• Session Manager Subsystem (aka Windows Session Manager)
+				○ Creates new sessions, first user mode process started by the kernel
+				○ Starts csrss.exe, wininit.exe & winlogon.exe
+		Task 5 - csrss.exe
+			• Client Server Runtime Process
+			• Mission critical
+		Task 6 - wininit.exe
+			• As it implies, Windows Initialization Process
+			• Launches services.exe, lsass.exe & lsaiso.exe
+			• Critical
+		Task 7 - wininit.exe > services.exe
+			• Service Control Manager
+			• Queryable via sc.exe
+		Task 8 - wininit.exe > services.exe > svchost.exe
+			• Host Process for Windows Services
+			• Hosts and manages Win Services
+			• Services run as DLLs
+			• Must have -k in the binary path
+		Task 9 - lsass.exe
+			• Local Security Authority Subsystem Service
+			• Enforces security policy
+				○ log on, passwd changes, access tokens, etc
+		Task 10 - winlogon.exe
+			• Windows Logon
+			• Handles Secure Attention Sequence (when you have to press ctrl+alt+del to log on)
+			• Loads user profile
+		Task 11 - explorer.exe
+			• File explorer! (and Taskbar + Start Menu)
+
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+	SysInternals
+		Task 1 - Intro
+			• A lot of Windows based power tools essentially
+		Task 2 - Installation
+		Task 3 - Using SysInternals live
+			• Allows for usage of tools directly from the web
+			• Requires WebDAV client
+			• Run WebDAV AND enable Network Discovery
+		Task 4 - File and Disk Utilities
+			• SigCheck
+				○ CLI tool that shows file version number, timestamp info, signature, cert chains, etc
+				○ Can compare files to VirusTotal
+				○ Can check for unsigned Sys32 files
+			• Streams
+				○ Shows $DATA streams that are found in NTFS file systems
+				○ Malware can leverage alternative data streams (ADS) to hide data
+			• SDelete (Secure Delete)
+		Task 5 - Networking Utilities
+			• TCPView
+				○ Shows detailed listening of all TCP/UDP endpoints
+					- Both local and remote addr
+		Task 6 - Process Utilities
+			• AutoRuns
+				○ Show what programs are scheduled to run on boot
+			• ProcDump
+				○ CLI tool to monitor applicatoins for CPU spikes and generating crash dumps
+			• Process Explorer
+				○ Like a better Services app, but laid out more similarly to Task Manager rather than Services
+			• ProcMon
+				○ Shows realtime file system, registry and process/thread activity
+			• PsExec
+				○ Basically a remote shell for executing processes on other systems
+		Task 7 - Security Utilities
+			• Sysmon
+				○ Monitors and logs system activity to the event log.
+				○ Persistent after reboots
+		Task 8 - System Information
+			• WinObj
+				○ Shows information on the NT Object Manager's namespace
+		Task 9 - Miscellaneous
+			• BgInfo
+				○ Displays information about pc name, ip, SP ver and more on the desktop
+			• RegJump
+				○ CLI applet for easier navigation of RegEdit
+			• Strings
+				○ Identifies strings in a file (can be good for malware detection)
+
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+	Windows Event Logs
+		Task 1 - What Are Event Logs?
+			• Logs of events and activity on the system, good for diagnosing and auditing systems
+		Task 2 - Event Viewer
+			• Elements of Event Logon
+				○ System Logs - OS related events
+				○ Security Logs - Tracks log in/log off
+				○ Application Logs - Events relating to installed applications
+				○ Directory Service Events - AD changes
+				○ File Replication Service Events - Sharing of Group Policies and logon scripts shared by DCs
+				○ DNS Event Logs - Domain events
+				○ Custom Logs
+			• A convenient way to read through events on the system, such as the ones above
+		Task 3 - wevtutil.exe
+			• Powershell tool to retrieve info on events efficiently
+		Task 4 - Get-WinEvent
+			• Powershell tool to get events and event logs from a pc, remote or local
+		Task 5 - XPath Queries
+			• XML Path Language, a way to filter events and interact with XML files
+		Task 6 - Event IDs
+			• Some good resources for Event IDs:
+				○ (DEPRECATED) https://static1.squarespace.com/static/552092d5e4b0661088167e5c/t/580595db9f745688bc7477f6/1476761074992/Windows+Logging+Cheat+Sheet_ver_Oct_2016.pdf
+				○ (DEPRECATED) https://web.archive.org/web/20190115215749/https://apps.nsa.gov/iaarchive/customcf/openAttachment.cfm?FilePath=/iad/library/ia-guidance/security-configuration/applications/assets/public/upload/Spotting-the-Adversary-with-Windows-Event-Log-Monitoring.pdf&WpKes=aF6woL7fQp3dJiqyJL2LenrLxuHC7ztGtVNK3x
+		Task 7 - Putting Theory Into Practice
+
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+	Sysmon
+		Task 1 - Intro
+		Task 2 - Sysmon Overview
+			• A tool used to monitor and log events on Windows
+				○ Essentially a further detailed Event Logs
+				○ Persistent across reboots
+			Notable Event ID:
+				ID 1: Proc Creation
+				ID 3: Network Connection
+				ID 7: Image Loaded
+				ID 8: CreateRemoteThread
+				ID 11: File Created
+				ID 12/3/4: Registry Event
+				ID 15: FileCreateStreamHash
+				ID 22: DNS Event
+		Task 3 - Installing and Preparing Sysmon
+			• After installation via SysInternals, run this powershell/cmd script as admin
+				○ Sysmon.exe -accepteula -i ..\Configuration\swift.xml
+		Task 4 - Cutting Out the Noise
+			• Better to work off a 'Exclude' process than an 'Include' process for rules
+			• CLI is more powerful
+			• Can do rudementary filtering with Event Viewer
+			• Further filtering with PowerShell
+		Task 5 - Hunting Metasploit
+			• I don't think Metasploit requires any introduction
+			• Will focus on detecting meterpreter
+				○ Suspicious ports (4444, 5555, etc)
+			• Can do this hunting with 
+		Task 6 - Detecting Mimikatz
+			• Mimikatz is a credential dumper and post-exploitation tool
+			• Can detect file creation named 'mimikatz'
+			• Look for LSASS.exe abuse and abnormal behavior
+		Task 7 - Hunting Malware
+			• Look for ports known to be used by malware (1034, 1604 for Ion-Storm) while using the exclude rule for goodware
+			• EXAMPLE:
+			/	<RuleGroup name="" groupRelation="or">
+			|		<NetworkConnect onmatch="include">
+			|			<DestinationPort condition="is">1034</DestinationPort>
+			|			<DestinationPort condition="is">1604</DestinationPort>
+			|		</NetworkConnect>
+			|		<NetworkConnect onmatch="exclude">
+			|			<Image condition="image">OneDrive.exe</Image>
+			|		</NetworkConnect>
+			\	</RuleGroup>
+		Task 8 - Hunting Persistence
+			• Look for files placed in \Startup or \Start Menu directories
+			• Look for regedits allowing for persistence
+				○ Placing script in CurrentVersion\Windows\Run
+		Task 9 - Detecting Evasion Techniques
+			• Using ADS to avoid detection
+			• Another one is to use remote threads
+
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+	OSQuery
+		Task 1 - Intro
+			• Open-source agent created by none other than Facebook, it converts the OS to a relational database
+				○ Pretty sure they use SQL with their db's so that makes sense lol
+			• Makes it easy to query processes, accounts, etc
+		Task 2 - Connect with the Lab
+			• type osqueryi in powershell to get an interactive mode
+		Task 3 - Osquery: Interactive Mode
+			• Uses fairly similar syntax to straight up SQL, type .help for help
+		Task 4 - Schema Documentation
+			• https://osquery.io/schema/5.5.1/
+		Task 5 - Creating SQL queries
+			• Uses a superset of SQLite
+			• Realistically only uses SELECT statement (sometimes UPDATE/DELETE)
+			• https://osquery.readthedocs.io/en/stable/introduction/sql/
+
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+	Splunk: Basics
+		Task 1 - Intro
+			• Splunk is one of the more popular SIEM's
+			• Can collect, analyze and correlate network and machine logs in real-time
+		Task 2 - Connect with the Lab
+		Task 3 - Splunk Components
+			• Forwarder
+				○ Installed on endpoints
+				○ Collects data and sends it to the Splunk instance
+				○ Lightweight
+			• Indexer
+				○ Procceses data from forwarder
+			• Search Head	
+				○ A method of searching indexed logs
+		Task 4 - Navigating Splunk
+		Task 5 - Adding Data
+			• Data can be event logs, website logs, firewall logs, vpn logs, etc
+			• Can upload data straight from the GUI
+		Task 6 - Conclusion
+
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+	Splunk 2
+		Task 1 - Deploy!
+		Task 2 - Dive into the data
+			• Using teh BOTSv2 dataset
+		Task 3 - 100
+			• Find her IP with pan:traffic query
+			• Use that to query her http stream
+				○ Narrow search to only include the site field
+			• Some of this data is encoded with base64
+		Task 4 - 200
+			• She used Tor, so modify the query to find entries pertaining to tor
+			• Next I need to ident who's doing a vuln scan on the website, fairly easy with knowing the site's IP
+			• With that I can query all actions by the attacker
+				○ There's 18k entries, I ident the URI path and rerun the query with that
+			• I then do a query to ident a XSS payload relating to Kevin's HTTP traffic
+		Task 5 - 300
+			• I find Mallorie's hostname then search again for powerpoint files since that was known to be encrypted
+			• Next is finding an encrypted Game of Thrones file, I query specifically for "GoT" and get S7E2 (why couldn't it have been a good season :<)
+			• Next is about finding a USB drive plugged into a computer named kutekitten, I just use a query for both of those fields
+			• I find the malware and enter into VirusTotal for the rest of the information
+		Task 6 - 400
+			• I'm informed of some TTPs of an APT, specifically using zip files to spear phish victims, a query for smtp and zip is necessary
+			• Next I need their SSL Issuer, I search their IP with a SSL keyword
+			• I'm told winsys32.dll caused a sus file to be downloaded, I follow the breadcrumbs to find a file with chinese chars
+			• I use Joe Sandbox to anaylze the .zip file now that I have it
+			• Lastly I saw they found a way to maintain persistence to their C2 server, my first stop was checking schtasks.exe as that's a common way
+
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+	Attacktive Directory
+	Attacking Kerberos
+		I'll be completely honest, I don't think this can fit well within the timeframe necessary and that's on me, I'll be doing this exercise
+		after the deadline just for my own personal practice, but I felt it useful to focus on informational labs over CTFs and attack emulations
+		
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+
+====================================================================================================================================
+
+//////////////////////////////////////////// PLACEHOLDERRRRRRRRRRRRRRRRRRRRRRRRRRRRRR \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	
+====================================================================================================================================
+	
+
+		Task 1 - 
+			• 
+		Task 2 - 
+			• 
+		Task 3 - 
+			• 
+		Task 4 - 
+			• 
+		Task 5 - 
+			• 
+		Task 6 - 
+			• 
+		Task 7 - 
+			• 
+		Task 8 - 
+			• 
+		Task 9 - 
+			• 
+		Task 10 - 
+			• 
+		Task 11 - 
+			• 
+		Task 12 - 
+			• 
+		Task 13 - 
+			• 
+		Task 14 - 
+			• 
+		Task 15 - 
+			• 
+		Task 16 - 
+			• 
+		Task 17 - 
+			• 
+		Task 18 - 
+			• 
+		Task 19 - 
+			• 
+		Task 20 - 
+			• 
+		Task 21 - 
+			• 
+		Task 22 - 
+			• 
+		Task 23 - 
+			• 
